@@ -9,16 +9,49 @@ import {
   List,
   ListItem,
   ListItemText,
-  Divider
+  Divider,
+  Chip,
+  Grid,
+  CircularProgress,
+  Tooltip,
+  IconButton
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import InfoIcon from '@mui/icons-material/Info';
 import axios from 'axios';
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [skills, setSkills] = useState({ explicit: [], inferred: [] });
+  const [showSkills, setShowSkills] = useState(false);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    // Fetch skills when component mounts
+    fetchSkills();
+    
+    // Add initial bot message
+    setMessages([
+      { 
+        text: "Hi! I'm Venkata Naveen Aduri. I'm here to answer any questions you have about my experience, skills, and background. Feel free to ask me anything!", 
+        sender: 'bot' 
+      }
+    ]);
+  }, []);
+
+  const fetchSkills = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/skills');
+      setSkills({
+        explicit: response.data.explicit_skills || [],
+        inferred: response.data.inferred_skills || []
+      });
+    } catch (error) {
+      console.error('Error fetching skills:', error);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -60,12 +93,47 @@ function App() {
     }
   };
 
+  const toggleSkillsDisplay = () => {
+    setShowSkills(!showSkills);
+  };
+
   return (
     <Container maxWidth="md" sx={{ height: '100vh', py: 4 }}>
       <Paper elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ p: 2, backgroundColor: 'primary.main', color: 'white' }}>
+        <Box sx={{ p: 2, backgroundColor: 'primary.main', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5">Resume Chatbot</Typography>
+          <Tooltip title="View my skills">
+            <IconButton color="inherit" onClick={toggleSkillsDisplay}>
+              <InfoIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
+        
+        {showSkills && (
+          <Box sx={{ p: 2, backgroundColor: 'grey.100' }}>
+            <Typography variant="h6" gutterBottom>My Skills</Typography>
+            <Typography variant="subtitle2" gutterBottom>Explicit Skills:</Typography>
+            <Box sx={{ mb: 2 }}>
+              {skills.explicit.length > 0 ? (
+                skills.explicit.map((skill, index) => (
+                  <Chip key={index} label={skill} sx={{ m: 0.5 }} color="primary" />
+                ))
+              ) : (
+                <Typography variant="body2">No explicit skills detected</Typography>
+              )}
+            </Box>
+            <Typography variant="subtitle2" gutterBottom>Inferred Skills:</Typography>
+            <Box>
+              {skills.inferred.length > 0 ? (
+                skills.inferred.map((skill, index) => (
+                  <Chip key={index} label={skill} sx={{ m: 0.5 }} color="secondary" />
+                ))
+              ) : (
+                <Typography variant="body2">No inferred skills available</Typography>
+              )}
+            </Box>
+          </Box>
+        )}
         
         <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
           <List>
@@ -90,6 +158,14 @@ function App() {
                 <Divider />
               </React.Fragment>
             ))}
+            {isLoading && (
+              <ListItem sx={{ justifyContent: 'flex-start' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CircularProgress size={20} sx={{ mr: 2 }} />
+                  <Typography>Thinking...</Typography>
+                </Box>
+              </ListItem>
+            )}
             <div ref={messagesEndRef} />
           </List>
         </Box>

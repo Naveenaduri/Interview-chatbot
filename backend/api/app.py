@@ -30,5 +30,13 @@ def get_resume_info():
     info = resume_parser.get_resume_info()
     return jsonify(info)
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000) 
+@app.route('/api/skills', methods=['GET'])
+def get_skills():
+    """Get both explicit and inferred skills from the resume."""
+    extracted_skills = chat_handler.extracted_skills
+    inferred_skills = chat_handler.inferred_skills
+    
+    return jsonify({
+        'explicit_skills': extracted_skills,
+        'inferred_skills': inferred_skills
+    })

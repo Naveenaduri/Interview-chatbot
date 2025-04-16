@@ -25,12 +25,12 @@ A chatbot application that can answer questions about a candidate based on their
 │   ├── app.py              # Flask application
 │   ├── chat_handler.py     # Chat logic and OpenAI integration
 │   ├── resume_parser.py    # PDF resume parsing
-│   └── requirements.txt    # Python dependencies
+│   └── venkata-aduri.pdf    # Resume file
 ├── frontend/
 │   ├── public/            # Static files
 │   ├── src/              # React source code
 │   └── package.json      # Node.js dependencies
-└── venkata-aduri.pdf     # Resume file
+└── requirements.txt    # Python dependencies
 ```
 
 ## Setup
