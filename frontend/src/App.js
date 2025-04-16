@@ -27,6 +27,7 @@ function App() {
   const [skills, setSkills] = useState({ explicit: [], inferred: [] });
   const [showSkills, setShowSkills] = useState(false);
   const messagesEndRef = useRef(null);
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
   useEffect(() => {
     // Fetch skills when component mounts
@@ -43,7 +44,7 @@ function App() {
 
   const fetchSkills = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/skills');
+      const response = await axios.get(`${BACKEND_URL}/api/skills`);
       setSkills({
         explicit: response.data.explicit_skills || [],
         inferred: response.data.inferred_skills || []
@@ -70,7 +71,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', {
+      const response = await axios.post(`${BACKEND_URL}/api/chat`, {
         message: userMessage
       });
       
