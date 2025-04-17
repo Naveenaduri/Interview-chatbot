@@ -7,3 +7,6 @@ langchain==0.0.267
 openai==0.27.0
 werkzeug==2.0.3 
 gunicorn==20.1.0
+spacy==3.7.2
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz 
+flask-mail==0.9.1
